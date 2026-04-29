@@ -1,50 +1,95 @@
+// default cities shown on the homepage
+const DEFAULT_CITIES = [
+    {id: "los-angeles", name: "Los Angeles", tz: "America/Los_Angeles"},
+    { id: "paris",       name: "Paris",       tz: "Europe/Paris" },
+    { id: "sydney",      name: "Sydney",      tz: "Australia/Sydney" },
+];
+
+function formatDate(m) {
+    return m.format("MMMM Do YYYY");
+}
+
+function formatTime(m) {
+    return `${m.format("h:mm:ss")} <small>${m.format("A")}</small>`;
+}
+
+
+// update all three cities
 function updateTime() {
-  // Los Angeles
-  let losAngelesElement = document.querySelector("#los-angeles");
-  if (losAngelesElement) {
-    let losAngelesDateElement = losAngelesElement.querySelector(".date");
-    let losAngelesTimeElement = losAngelesElement.querySelector(".time");
-    let losAngelesTime = moment().tz("America/Los_Angeles");
-
-    losAngelesDateElement.innerHTML = losAngelesTime.format("MMMM	Do YYYY");
-    losAngelesTimeElement.innerHTML = losAngelesTime.format(
-      "h:mm:ss [<small>]A[</small>]"
-    );
-  }
-
-  // Paris
-  let parisElement = document.querySelector("#paris");
-  if (parisElement) {
-    let parisDateElement = parisElement.querySelector(".date");
-    let parisTimeElement = parisElement.querySelector(".time");
-    let parisTime = moment().tz("Europe/Paris");
-
-    parisDateElement.innerHTML = parisTime.format("MMMM	Do YYYY");
-    parisTimeElement.innerHTML = parisTime.format(
-      "h:mm:ss [<small>]A[</small>]"
-    );
-  }
+    DEFAULT_CITIES.forEach(({ id, tz}) => {
+        const el = document.querySelector(`#${id}`);
+        if(!el) return;
+        const now = moment().tz(tz);
+        el.querySelector(".date").innerHTML = formatDate(now);
+        el.querySelector(".time").innerHTML = formatTime(now);
+    });
 }
 
 function updateCity(event) {
   let cityTimeZone = event.target.value;
-  if (cityTimeZone === "current") {
+
+  // rest: show default three cities
+  if (!cityTimeZone) {
+    renderDefaultCities();
+    return;
+  }
+
+  let isCurrent = cityTimeZone === "current";
+  if (isCurrent) {
     cityTimeZone = moment.tz.guess();
   }
-  let cityName = cityTimeZone.replace("_", " ").split("/")[1];
-  let cityTime = moment().tz(cityTimeZone);
-  let citiesElement = document.querySelector("#cities");
-  citiesElement.innerHTML = `
-  <div class="city">
-    <div>
-      <h2>${cityName}</h2>
-      <div class="date">${cityTime.format("MMMM	Do YYYY")}</div>
+
+  const parts = cityTimeZone.split("/");
+  const cityName = parts[parts.length - 1].replace(/_/g, " ");
+  const cityTime = moment().tz(cityTimeZone);
+
+  // link back to homepage when showing a selected city
+  const homepageLink = `<a class="back-home" href="index.html">← Back to World Clock</a>`;
+
+  // badxeg shown only fo rmy current location
+  const bade = isCurrent
+    ? `<span class="location-badge">📍 Your location</span>`
+    : "";
+
+  document.querySelector("#cities").innerHTML = `
+    <div class="city" id="selected-city">
+      <div class="city-info">
+        <h2>${cityName}</h2>
+        <div class="date">${formatDate(cityTime)}</div>
+        ${badge}
+        ${homepageLink}
+      </div>
+      <div class="time">${formatTime(cityTime)}</div>
     </div>
-    <div class="time">${cityTime.format("h:mm:ss")} <small>${cityTime.format(
-    "A"
-  )}</small></div>
-  </div>
   `;
+
+   // Keep the selected city's clock ticking
+  clearInterval(window._selectedInterval);
+  window._selectedInterval = setInterval(() => {
+    const el = document.querySelector("#selected-city");
+    if (!el) return;
+    const now = moment().tz(cityTimeZone);
+    el.querySelector(".date").innerHTML = formatDate(now);
+    el.querySelector(".time").innerHTML = formatTime(now);
+  }, 1000);
+}
+
+ // Restore the three default city cards
+function renderDefaultCities() {
+  clearInterval(window._selectedInterval);
+ 
+  document.querySelector("#cities").innerHTML = DEFAULT_CITIES.map(
+    ({ id, name }) => `
+    <div class="city" id="${id}">
+      <div class="city-info">
+        <h2>${name}</h2>
+        <div class="date"></div>
+      </div>
+      <div class="time"></div>
+    </div>`
+  ).join("");
+ 
+  updateTime(); // fill times immediately
 }
 
 updateTime();

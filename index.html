@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>World Clock</h1>
+        <h1>World Clock 🌍</h1>
 
         <select id="city">
             <option value="">Select a City...</option>
@@ -19,11 +19,14 @@
             <option value="Europe/London">London</option>
             <option value="America/New_York">New York</option>
             <option value="Pacific/Aukland">Auckland</option>
+            <option value="Asia/Tokoyo">Tokoyo</option>
+            <option value="America/Sao_Paulo">Sao Paulo</option>
+            <option value="Africa/Johannesburg">Johannesburg</option>
         </select>
 
         <div id="cities">
             <div class="city" id="los-angeles">
-                <div>
+                <div class="city-info">
                     <h2>Los Angeles</h2>
                     <div class="date"></div>
                 </div>
@@ -31,8 +34,16 @@
             </div>
         
             <div class="city" id="paris">
-                <div>
+                <div class="city-info">
                     <h2>Paris</h2>
+                    <div class="date"></div>
+                </div>
+                <div class="time"></div>
+            </div>
+
+            <div class="city" id="sydney">
+                <div class="city-info">
+                    <h2>Sydney</h2>
                     <div class="date"></div>
                 </div>
                 <div class="time"></div>
@@ -46,5 +57,6 @@
         >
     </footer>
     <script src="src/index.js"></script>
+
 </body>
 </html>
