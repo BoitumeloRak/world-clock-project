@@ -47,7 +47,7 @@ function updateCity(event) {
   const homepageLink = `<a class="back-home" href="index.html">← Back to World Clock</a>`;
 
   // badxeg shown only fo rmy current location
-  const bade = isCurrent
+  const badge = isCurrent
     ? `<span class="location-badge">📍 Your location</span>`
     : "";
 
